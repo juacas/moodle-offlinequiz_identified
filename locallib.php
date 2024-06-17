@@ -122,7 +122,7 @@ class offlinequiz_answer_pdf_identified extends offlinequiz_answer_pdf {
         $y = $this->GetY();
         $x = $this->GetX();
         // Print bar code for page.
-        offlinequiz_barcodewriter::print_barcode($this, $this->PageNo(), $x, $y);
+        offlinequiz_barcodewriter::print_barcode($this, $this->getGroupPageNo(), $x, $y);
 
         $this->Rect($x, $y, 0.2, 3.7, 'F');
 
