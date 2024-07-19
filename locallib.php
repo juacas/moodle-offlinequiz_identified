@@ -36,6 +36,7 @@ require_once($CFG->dirroot . '/mod/offlinequiz/pdflib.php');
 
 class offlinequiz_answer_pdf_identified extends offlinequiz_answer_pdf {
     public $participant = null;
+    public $listno = null;
 
     public function Header(){
         global $CFG, $DB;
