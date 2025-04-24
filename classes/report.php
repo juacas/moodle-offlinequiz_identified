@@ -1,6 +1,4 @@
 <?php
-use offlinequiz_identified\identifiedform;
-
 // This file is part of mod_offlinequiz for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -27,21 +25,23 @@ use offlinequiz_identified\identifiedform;
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  **/
-
+namespace offlinequiz_identified;
+use mod_offlinequiz\default_report;
+use \navigation_node;
+use \moodle_url;
 defined('MOODLE_INTERNAL') || die();
-
 require_once("report/identified/locallib.php");
 /**
  * Offlinequiz identified forms generator.
  */
-class offlinequiz_identified_report extends offlinequiz_default_report
+class report extends default_report
 {
 
     public function display($offlinequiz, $cm, $course)
     {
-        global $CFG, $OUTPUT, $DB;
-        $context = context_module::instance($cm->id);
-        $toform = array('id' => $cm->id, 'offlinequiz' => $offlinequiz, 'listid' => null, 'groupid' => null);
+        global $CFG, $OUTPUT, $PAGE, $DB;
+        $context = \context_module::instance($cm->id);
+        $toform = ['id' => $cm->id, 'offlinequiz' => $offlinequiz, 'listid' => null, 'groupid' => null];
         $mform = new identifiedformselector(null, $toform, 'get');
         // Disable if forms are not generated.
         if ($offlinequiz->docscreated == 1) {
@@ -70,8 +70,12 @@ class offlinequiz_identified_report extends offlinequiz_default_report
 
         // Set anydefault data (if any).
         $mform->set_data($toform);
+       
         // Display Tabs.
         $this->print_header_and_tabs($cm, $course, $offlinequiz, 'identified');
+        // Display the header.
+        echo $OUTPUT->heading(get_string('identified', 'offlinequiz_identified'), 2);
+
         if ($offlinequiz->docscreated == 0) {
             // url createquiz.
             $url = new moodle_url('/mod/offlinequiz/createquiz.php', ['q' => $offlinequiz->id, 'tabs' => 'tabpreview']);
@@ -91,34 +95,25 @@ class offlinequiz_identified_report extends offlinequiz_default_report
         }
         return true;
     }
-    public function print_header_and_tabs($cm, $course, $offlinequiz, $reportmode = 'overview')
+   
+    public function add_to_navigation(navigation_node $navigation, $cm, $offlinequiz): navigation_node
     {
-        global $CFG, $PAGE, $OUTPUT;
-        $reporttitle = get_string('pluginname', 'offlinequiz_identified');
-        $currenttab = 'tabidentified';
+        // Add navigation nodes to mod_tabofflinequizcontent and mod_tabattendances.
+        $url = new moodle_url('/mod/offlinequiz/report.php', ['mode' => 'identified', 'id' => $cm->id]);
+        $navnode= navigation_node::create(text: get_string('identified', 'offlinequiz_identified'),
+                                         action: $url,
+                                         key: $this->get_navigation_key());
 
-        // Print the page header.
-        $PAGE->set_title(format_string($offlinequiz->name) . ' -- ' . $reporttitle);
-        $PAGE->set_heading($course->fullname);
-        echo $OUTPUT->header();
-        // Prints information about the offlinequiz identified report.
-        offlinequiz_print_tabs($offlinequiz, $currenttab, $cm);
+        // Get tabofflinequizcontent.
+        $parentnode = $navigation->get('mod_offlinequiz_edit');
+        $parentnode->add_node($navnode);
+               
+        return $navigation;
     }
-    /**
-     * Add the identified report tab to the offlinequiz module.
-     */
-    public function add_to_tabs($tabs, $cm, $offlinequiz)
-    {
-        $tabs['tabidentified'] = [
-            'tab' => 'tabofflinequizcontent',
-            'url' => new moodle_url('/mod/offlinequiz/report.php', ['mode' => 'identified', 'id' => $cm->id]),
-            'title' => get_string('identified', 'offlinequiz_identified'),
-        ];
-        $tabs['tabidentified2'] = [
-            'tab' => 'tabattendances',
-            'url' => new moodle_url('/mod/offlinequiz/report.php', ['mode' => 'identified', 'id' => $cm->id]),
-            'title' => get_string('identified', 'offlinequiz_identified'),
-        ];
-        return $tabs;
+    public function get_report_title(): string {
+        return get_string('pluginname', 'offlinequiz_identified');
+    }
+    public function get_navigation_key(): string {
+        return 'tab_identifiedforms';
     }
 }
