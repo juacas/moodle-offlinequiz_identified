@@ -1,8 +1,17 @@
+# IMPORTANT #
+
+This repository is now archived because this plugin in fully integrated into https://github.com/academic-moodle-cooperation/moodle-mod_offlinequiz from version MOODLE_500_STABLE.
+
+
 # Identified forms for Offlinequiz #
 
-IMPORTANT: This plugin need a version of mod_offlinequiz with the patch <https://github.com/academic-moodle-cooperation/moodle-mod_offlinequiz/pull/219> applied to enable the detection of third-party plugins.
+This plugin can be installed in mod_offlinequiz version 4.5.
+If you are installing this plugin in mod_offlinequiz prior to 4.4 you need to apply the patch <https://github.com/academic-moodle-cooperation/moodle-mod_offlinequiz/pull/219> to enable the detection of third-party plugins.
+If you are trying to install de plugin in version 5 or later, stop trying. This is available out-of-factory ;)
 
-This subplugin allow to generate a set of "Answer forms" with the names and identifiers of the students pre-marked.
+# Description
+
+This subplugin allows to generate a set of "Answer forms" with the names and identifiers of the students pre-marked.
 The selection of students can be controlled by:
 
 - Editing "attendance lists" in Offlinequiz itself.
